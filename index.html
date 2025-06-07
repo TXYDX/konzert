@@ -37,7 +37,8 @@
                 var(--door-stripe-dark) 4px,
                 var(--door-stripe-dark) 8px
             );
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9),
+                        0 0 2px rgba(0, 0, 0, 0.7); /* Subtle outer shadow for depth */
         }
 
         .engraved-label {
@@ -63,6 +64,7 @@
 
         .engraved-label p {
             color: var(--subtle-light-grey);
+            font-style: italic;
             font-family: "Chau Philomene One", sans-serif; /* Original font */
             margin-top: 0.3rem;
             text-shadow: 1.2px 1.2px 1.2px #000000;
@@ -106,7 +108,7 @@
             50% {
                 box-shadow: 0 0 2px rgba(100, 100, 100, 0.2),
                             inset 0 0 10px rgba(0, 0, 0, 0.8),
-                            0 0 5px rgba(255, 191, 138, 0.4), /* Brighter glow (reduced blur) */
+                            0 0 5px rgba(251, 194, 148, 0.4), /* Brighter glow (reduced blur) */
                             0 0 10px rgba(255, 191, 138, 0.15); /* Wider, more obvious spread (reduced spread) */
             }
         }
@@ -130,7 +132,7 @@
             box-shadow: 0 0 15px rgba(150, 150, 150, 0.3), /* Enhanced grey shadow on hover */
                         inset 0 0 10px rgba(0, 0, 0, 0.7), /* Enhanced inner dark shadow */
                         0 0 10px var(--glow-color-base), /* Strong golden glow on hover (reduced blur) */
-                        0 0 20px rgba(255, 191, 138, 0.3); /* Wider, strong spread on hover (reduced spread) */
+                        0 0 20px rgba(255, 203, 160, 0.3); /* Wider, strong spread on hover (reduced spread) */
             animation: none; /* Stop the pulsing animation on hover for immediate hover feedback */
         }
 
@@ -235,11 +237,11 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            text-align: center;
             transform: translate(-50%, -50%);
             color: var(--light-whisper);
             font-size: 1em;
             opacity: 0;
+            text-align: center; /* Ensure text is centered */
             transition: opacity 0.5s ease;
         }
     </style>
@@ -283,13 +285,13 @@
                 <h1 class="text-xl tracking-wide">
                   THE DOOR YOU DIDN'T TRY
                 </h1>
-                <p class="text-[10px] opacity-70 mt-1">
+                <p class="text-[10px] italic opacity-70 mt-1">
                   where could it have led?
                 </p>
               </div>
         </div>
 
-        <div id="closed-text">Öffnet sich vor Einlass<br />für mehr Infos.</div>
+        <div id="closed-text">Öffnet sich vor Einlass<br />für alle Details.</div>
     </div>
 
     <div class="light-slit right"></div>
@@ -299,10 +301,14 @@
         const doorKnob = document.querySelector('.door-knob');
         const container = document.querySelector('.shake-container');
         const closedText = document.getElementById('closed-text');
+        const posterImg = document.getElementById('poster-img'); // Get the poster image element
 
         doorKnob.addEventListener('click', () => {
             container.classList.add('shake');
             closedText.style.opacity = 1;
+            
+            // Change the poster image source to poster_2.png
+            posterImg.src = 'poster_2.png';
 
             setTimeout(() => {
                 container.classList.remove('shake');
@@ -311,7 +317,6 @@
         });
 
         const modal = document.getElementById('modal');
-        const posterImg = document.getElementById('poster-img');
         const closeModal = document.getElementById('close-modal');
 
         posterImg.addEventListener('click', () => {
