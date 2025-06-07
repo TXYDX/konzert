@@ -55,7 +55,7 @@
             text-shadow:
                 1.5px 1.5px 1.5px #000000,
                 -1.5px -1.5px 1.5px rgba(255, 255, 255, 0.2); /* Softer highlight */
-            font-size: 1.2rem;
+            font-size: 1.2rem; /* Adjusted font size */
             margin: 0;
             font-family: "Alumni Sans SC", sans-serif; /* Original font */
             font-weight: 700; /* Original weight */
@@ -101,8 +101,8 @@
             0%, 100% {
                 box-shadow: 0 0 2px rgba(100, 100, 100, 0.2), /* Existing grey shadow */
                             inset 0 0 10px rgba(0, 0, 0, 0.8), /* Existing inner dark shadow */
-                            0 0 5px rgba(255, 191, 138, 0.3), /* Faint initial glow (increased opacity) */
-                            0 0 8px rgba(255, 191, 138, 0.1); /* Very faint spread (increased opacity) */
+                            0 0 0px rgba(255, 191, 138, 0), /* Fully transparent glow at start/end */
+                            0 0 0px rgba(255, 191, 138, 0); /* Fully transparent spread at start/end */
             }
             50% {
                 box-shadow: 0 0 2px rgba(100, 100, 100, 0.2),
@@ -123,7 +123,7 @@
             justify-content: center;
             align-items: center;
             cursor: pointer; /* Ensure pointer is always there */
-            animation: knob-pulse-glow 4s infinite ease-in-out; /* Continuous glow animation */
+            animation: knob-pulse-glow 5s infinite ease-in-out; /* Continuous glow animation */
             transition: box-shadow 0.3s ease; /* Maintain a transition for hover */
         }
 
@@ -135,13 +135,21 @@
             animation: none; /* Stop the pulsing animation on hover for immediate hover feedback */
         }
 
+        /* Class to remove the glow after click */
+        .door-knob.no-glow {
+            animation: none; /* Stop all animations */
+            box-shadow: 0 0 2px rgba(100, 100, 100, 0.2), /* Keep existing grey shadow */
+                        inset 0 0 10px rgba(0, 0, 0, 0.8); /* Keep existing inner dark shadow */
+            transition: box-shadow 0.5s ease-out; /* Smooth transition to no glow */
+        }
+
         .door-knob::before {
             content: '';
             width: 20px;
             height: 20px;
-            background-color: var(--door-stripe-dark);
+            background-color: var(--muted-brown);
             border-radius: 50%;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.9);
+            box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.9);
         }
 
         /* Light slits */
@@ -244,15 +252,15 @@
             transition: opacity 0.5s ease;
         }
 
-        /* Hinge styles - Adjusted for better appearance */
+        /* Hinge styles - Adjusted for better appearance and responsiveness */
         .hinge {
             position: absolute;
-            width: 12px; /* Thinner hinges */
-            height: 60px; /* Shorter hinges */
+            width: 12px;
+            height: 60px;
             background-color: var(--muted-brown);
-            border-radius: 3px; /* Smaller radius */
+            border-radius: 3px;
             box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.1);
-            z-index: 20; /* Ensure they're above the door */
+            z-index: 20;
         }
 
         .hinge::before, .hinge::after {
@@ -260,32 +268,74 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            width: 50%; /* Smaller width for the horizontal parts */
-            height: 4px; /* Thinner horizontal parts */
+            width: 50%;
+            height: 4px;
             background-color: var(--door-stripe-dark);
             border-radius: 2px;
         }
 
         .hinge::before {
-            top: 12px; /* Adjusted position */
+            top: 12px;
         }
 
         .hinge::after {
-            bottom: 12px; /* Adjusted position */
+            bottom: 12px;
         }
 
         .hinge.top {
-            top: 40px; 
+            top: 5%; /* Changed from fixed pixels to percentage for responsiveness */
             left: 0;
         }
 
         .hinge.bottom {
-            bottom: 40px; 
+            bottom: 5%; /* Changed from fixed pixels to percentage for responsiveness */
             left: 0;
+        }
+
+        /* New global class to remove all glows */
+        body.no-global-glow .light-slit {
+            animation: none !important; /* Force removal of animation */
+            opacity: 0 !important; /* Make them fully transparent */
+            transition: opacity 1s ease-out; /* Smooth fade out */
+        }
+
+        body.no-global-glow .keyhole { /* Target keyhole for its filter/animation */
+            animation: none !important;
+            filter: none !important; /* Remove drop-shadow */
+            transition: filter 0.5s ease-out;
+        }
+
+        body.no-global-glow .keyhole-fill { /* Target keyhole-fill directly for color */
+            animation: none !important;
+            fill: black !important; /* Make it black */
+            opacity: 1 !important; /* Ensure it's fully visible */
+            transition: fill 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition for color/opacity */
+        }
+
+        /* MOBILE ONLY message for screens wider than 500px */
+        #mobile-only-message {
+            display: none; /* Hidden by default */
+        }
+
+        @media (min-width: 501px) {
+            /* Hide the main door content */
+            .shake-container,
+            .light-slit {
+                display: none !important;
+            }
+
+            /* Show the mobile only message */
+            #mobile-only-message {
+                display: flex !important; /* Override the 'hidden' class from Tailwind */
+            }
         }
     </style>
 </head>
 <body class="font-chau bg-black flex items-center justify-center h-screen w-screen">
+
+    <div id="mobile-only-message" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[100]">
+        <p class="text-white text-3xl font-bold text-center">MOBILE ONLY</p>
+    </div>
 
     <div class="relative h-full w-full bg-[var(--door-stripe-dark)] shadow-lg flex flex-col justify-between p-4 shake-container">
 
@@ -344,14 +394,20 @@
         const doorKnob = document.querySelector('.door-knob');
         const container = document.querySelector('.shake-container');
         const closedText = document.getElementById('closed-text');
-        const posterImg = document.getElementById('poster-img'); // Get the main poster image element
-        const modalPosterImg = document.getElementById('modal-poster-img'); // Get the modal's poster image element
+        const posterImg = document.getElementById('poster-img');
+        const modalPosterImg = document.getElementById('modal-poster-img');
 
         doorKnob.addEventListener('click', () => {
             container.classList.add('shake');
             closedText.style.opacity = 1;
             
-            // Change the poster image source to poster_2.png for both main image and modal image
+            // Remove the door knob's specific glow
+            doorKnob.classList.add('no-glow');
+
+            // Add the global class to remove all other glows
+            document.body.classList.add('no-global-glow');
+
+            // Change the poster image source
             posterImg.src = 'poster_2.png';
             modalPosterImg.src = 'poster_2.png';
 
@@ -362,8 +418,6 @@
         });
 
         const modal = document.getElementById('modal');
-        // const posterImg = document.getElementById('poster-img');
-
         const closeModal = document.getElementById('close-modal');
 
         posterImg.addEventListener('click', () => {
