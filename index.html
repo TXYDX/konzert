@@ -283,12 +283,12 @@
         }
 
         .hinge.top {
-            top: 5%; /* Changed from fixed pixels to percentage for responsiveness */
+            top: 40px; /* Aligns top of hinge with top of upper door panel */
             left: 0;
         }
 
         .hinge.bottom {
-            bottom: 5%; /* Changed from fixed pixels to percentage for responsiveness */
+            bottom: 96px; /* Aligns bottom of hinge with bottom of lower door panel */
             left: 0;
         }
 
@@ -314,7 +314,10 @@
 
         /* MOBILE ONLY message for screens wider than 500px */
         #mobile-only-message {
-            display: none; /* Hidden by default */
+            opacity: 0; /* Initially invisible */
+            pointer-events: none; /* Disable interaction when invisible */
+            transition: opacity 0.5s ease-in-out; /* Define transition for when it becomes visible */
+            display: none; /* Hidden by default, will be overridden by media query */
         }
 
         @media (min-width: 501px) {
@@ -324,16 +327,18 @@
                 display: none !important;
             }
 
-            /* Show the mobile only message */
+            /* Show the mobile only message with a fade-in */
             #mobile-only-message {
-                display: flex !important; /* Override the 'hidden' class from Tailwind */
+                display: flex !important; /* Override the 'hidden' class from Tailwind and default 'display: none' */
+                opacity: 1; /* Make it visible */
+                pointer-events: auto; /* Enable interaction */
             }
         }
     </style>
 </head>
 <body class="font-chau bg-black flex items-center justify-center h-screen w-screen">
 
-    <div id="mobile-only-message" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[100]">
+    <div id="mobile-only-message" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[100]">
         <p class="text-white text-3xl font-bold text-center">MOBILE ONLY</p>
     </div>
 
