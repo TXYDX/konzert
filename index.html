@@ -96,6 +96,22 @@
         .screw.bottom-left { bottom: 8px; left: 8px; }
         .screw.bottom-right { bottom: 8px; right: 8px; }
 
+        /* Keyframes for the doorknob pulse glow */
+        @keyframes knob-pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 2px rgba(100, 100, 100, 0.2), /* Existing grey shadow */
+                            inset 0 0 6px rgba(0, 0, 0, 0.8), /* Existing inner dark shadow */
+                            0 0 5px rgba(255, 191, 138, 0.2), /* Faint initial glow */
+                            0 0 7px rgba(255, 191, 138, 0.05); /* Very faint spread */
+            }
+            50% {
+                box-shadow: 0 0 2px rgba(100, 100, 100, 0.2),
+                            inset 0 0 6px rgba(0, 0, 0, 0.8),
+                            0 0 7px rgba(249, 195, 161, 0.6), /* Brighter glow */
+                            0 0 15px rgba(255, 202, 165, 0.3); /* Wider, more obvious spread */
+            }
+        }
+
         .door-knob {
             width: 55px;
             height: 55px;
@@ -103,16 +119,20 @@
             background-color: var(--muted-brown);
             border-radius: 50%;
             transform: translateY(-50%);
-            box-shadow: 0 0 2px rgba(100, 100, 100, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: box-shadow 0.3s ease;
+            cursor: pointer; /* Ensure pointer is always there */
+            animation: knob-pulse-glow 4s infinite ease-in-out; /* Continuous glow animation */
+            transition: box-shadow 0.3s ease; /* Maintain a transition for hover */
         }
 
         .door-knob:hover {
-            box-shadow: 0 0 15px rgba(150, 150, 150, 0.3), inset 0 0 10px rgba(0, 0, 0, 0.7);
-            cursor: pointer;
+            box-shadow: 0 0 15px rgba(150, 150, 150, 0.3), /* Enhanced grey shadow on hover */
+                        inset 0 0 10px rgba(0, 0, 0, 0.7), /* Enhanced inner dark shadow */
+                        0 0 20px var(--glow-color-base), /* Strong golden glow on hover */
+                        0 0 40px rgba(255, 191, 138, 0.5); /* Wider, strong spread on hover */
+            animation: none; /* Stop the pulsing animation on hover for immediate hover feedback */
         }
 
         .door-knob::before {
@@ -126,12 +146,12 @@
 
         /* Light slits */
         .light-slit {
-            position: absolute;
-            z-index: 50;
+            z-index: 50; /* High z-index to ensure visibility */
             /* Base filter and opacity are set by pulse-light animation */
         }
 
         .light-slit.right {
+            position: absolute; /* Relative to body as its parent */
             top: 0;
             right: 0;
             width: 6px; /* Initial thickness */
@@ -142,6 +162,7 @@
         }
 
         .light-slit.bottom {
+            position: fixed; /* Fixed to viewport */
             bottom: 0;
             left: 0;
             width: 100%;
@@ -224,7 +245,7 @@
 </head>
 <body class="font-chau bg-black flex items-center justify-center h-screen w-screen">
 
-    <div class="relative h-full w-full bg-[var(--door-stripe-dark)] shadow-lg flex flex-col justify-between shake-container">
+    <div class="relative h-full w-full bg-[var(--door-stripe-dark)] shadow-lg flex flex-col justify-between p-4 shake-container">
         <div class="flex-grow bg-[var(--door-stripe-dark)] border border-stone-900 rounded-lg m-6 door-panel flex flex-col justify-center items-center">
 
             <div class="relative w-1/2 h-auto">
@@ -267,11 +288,11 @@
               </div>
         </div>
 
-        <div class="light-slit right"></div>
-        <div class="light-slit bottom"></div>
-
         <div id="closed-text">It's closed. <br /> Try again later.</div>
     </div>
+
+    <div class="light-slit right"></div>
+    <div class="light-slit bottom"></div>
 
     <script>
         const doorKnob = document.querySelector('.door-knob');
