@@ -100,15 +100,15 @@
         @keyframes knob-pulse-glow {
             0%, 100% {
                 box-shadow: 0 0 2px rgba(100, 100, 100, 0.2), /* Existing grey shadow */
-                            inset 0 0 6px rgba(0, 0, 0, 0.8), /* Existing inner dark shadow */
-                            0 0 5px rgba(255, 191, 138, 0.2), /* Faint initial glow */
-                            0 0 7px rgba(255, 191, 138, 0.05); /* Very faint spread */
+                            inset 0 0 10px rgba(0, 0, 0, 0.8), /* Existing inner dark shadow */
+                            0 0 2px rgba(255, 191, 138, 0.1), /* Faint initial glow (reduced blur) */
+                            0 0 3px rgba(255, 191, 138, 0.02); /* Very faint spread (reduced spread) */
             }
             50% {
                 box-shadow: 0 0 2px rgba(100, 100, 100, 0.2),
-                            inset 0 0 6px rgba(0, 0, 0, 0.8),
-                            0 0 7px rgba(249, 195, 161, 0.6), /* Brighter glow */
-                            0 0 15px rgba(255, 202, 165, 0.3); /* Wider, more obvious spread */
+                            inset 0 0 10px rgba(0, 0, 0, 0.8),
+                            0 0 5px rgba(255, 191, 138, 0.4), /* Brighter glow (reduced blur) */
+                            0 0 10px rgba(255, 191, 138, 0.15); /* Wider, more obvious spread (reduced spread) */
             }
         }
 
@@ -130,8 +130,8 @@
         .door-knob:hover {
             box-shadow: 0 0 15px rgba(150, 150, 150, 0.3), /* Enhanced grey shadow on hover */
                         inset 0 0 10px rgba(0, 0, 0, 0.7), /* Enhanced inner dark shadow */
-                        0 0 20px var(--glow-color-base), /* Strong golden glow on hover */
-                        0 0 40px rgba(255, 191, 138, 0.5); /* Wider, strong spread on hover */
+                        0 0 10px var(--glow-color-base), /* Strong golden glow on hover (reduced blur) */
+                        0 0 20px rgba(255, 191, 138, 0.3); /* Wider, strong spread on hover (reduced spread) */
             animation: none; /* Stop the pulsing animation on hover for immediate hover feedback */
         }
 
@@ -155,7 +155,8 @@
             top: 0;
             right: 0;
             width: 6px; /* Initial thickness */
-            height: 100%;
+            /* Height now extends beyond the page bottom */
+            height: calc(100% + 5px); /* Extend by 5px to cover bottom corner gap */
             background: linear-gradient(to bottom, transparent, var(--glow-color-base), transparent);
             background-size: 100% 300%; /* Allows vertical movement of gradient */
             animation: pulse-light 10s infinite ease-in-out, color-shift-vertical 11s infinite ease-in-out;
