@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TXYDX: Konzert</title>
+    <title>KONZERT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+SC:ital,wght@0,100..900;1,100..900&family=Chau+Philomene+One:ital@0;1&display=swap" rel="stylesheet">
@@ -284,12 +284,12 @@
 
         .hinge.top {
             top: 40px; /* Aligns top of hinge with top of upper door panel */
-            left: 0;
+            left: 16px; /* Aligned with shake-container padding (p-4) */
         }
 
         .hinge.bottom {
             bottom: 96px; /* Aligns bottom of hinge with bottom of lower door panel */
-            left: 0;
+            left: 16px; /* Aligned with shake-container padding (p-4) */
         }
 
         /* New global class to remove all glows */
@@ -310,6 +310,23 @@
             fill: black !important; /* Make it black */
             opacity: 1 !important; /* Ensure it's fully visible */
             transition: fill 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition for color/opacity */
+        }
+
+        /* Poster Glow */
+        .poster-glow {
+            animation: poster-pulse-glow 3s infinite ease-in-out;
+            transition: box-shadow 0.5s ease; /* For a smooth transition if it wasn't glowing before */
+        }
+
+        @keyframes poster-pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(255, 191, 138, 0.4), /* Subtle base glow */
+                            0 0 10px rgba(255, 191, 138, 0.2); /* Wider, softer glow */
+            }
+            50% {
+                box-shadow: 0 0 10px rgba(255, 191, 138, 0.8), /* Brighter */
+                            0 0 20px rgba(255, 191, 138, 0.5); /* Wider and more intense */
+            }
         }
 
         /* MOBILE ONLY message for screens wider than 500px */
@@ -415,6 +432,9 @@
             // Change the poster image source
             posterImg.src = 'poster_2.png';
             modalPosterImg.src = 'poster_2.png';
+
+            // *** NEU: Fügt den Glow zum Poster hinzu ***
+            posterImg.classList.add('poster-glow');
 
             setTimeout(() => {
                 container.classList.remove('shake');
