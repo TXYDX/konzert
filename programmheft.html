@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE X YOU DIDN'T X</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Grundlegende Schriftart für die gesamte Seite */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Grundlegender Übergang für dynamische Farben, wird von JS überschrieben */
+            transition: background-color 0.5s ease-out;
+        }
+        /* Benutzerdefinierte Akzentfarbe */
+        .text-accent-color {
+            color: #D4A74B;
+        }
+        /* Stil für den versteckten Inhalt der Setlist-Elemente */
+        .setlist-item-content {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            padding: 0; /* Set all padding to 0 when collapsed */
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out, visibility 0s linear 0.5s, padding 0.5s ease-out;
+        }
+        .setlist-item-content.expanded {
+            max-height: 200px; /* Adjust as needed based on content height */
+            opacity: 1;
+            visibility: visible;
+            padding: 1rem; /* Re-apply all padding (p-4) when expanded */
+            transition: max-height 0.5s ease-in, opacity 0.5s ease-in, visibility 0s linear 0s, padding 0.5s ease-in;
+        }
+        /* New class for the border when content is expanded */
+        .setlist-item-content.expanded.with-border {
+            border-top: 1px solid var(--border-color, #475569); /* Default Tailwind zinc-700 */
+        }
+        /* Ensure inner p tags don't have default margins that might create space */
+        .setlist-item-content p {
+            margin: 0; /* Remove default paragraph margins */
+        }
+
+        /* Drehung für das Chevron-Icon beim Ausklappen */
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+        .chevron-icon.rotate {
+            transform: rotate(180deg);
+        }
+        /* Eigene Übergänge für Elemente, deren Farben dynamisch von JS gesetzt werden */
+        .transition-color-js {
+            transition: color 0.5s ease-out, background-color 0.5s ease-out, border-color 0.5s ease-out, box-shadow 0.5s ease-out;
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+        }
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #18181b; /* zinc-900 */
+            color: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease-out;
+        }
+        .modal.open .modal-content {
+            transform: translateY(0);
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #D4A74B;
+        }
+        .language-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+        .language-toggle button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            background-color: #3f3f46; /* zinc-700 */
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .language-toggle button.active {
+            background-color: #D4A74B;
+            color: #18181b;
+        }
+        .lyrics-container {
+            white-space: pre-wrap; /* Preserve line breaks */
+            text-align: left;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-black text-white antialiased">
+    <div class="flex flex-col min-h-screen">
+        <main class="flex-grow flex flex-col items-center justify-center p-4 text-center">
+            <h1 id="dynamic-title" class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-2 pt-8">
+                THE <span id="word-one" class="text-accent-color opacity-100 transition-opacity duration-500">ROAD</span> YOU DIDN'T <span id="word-two" class="text-accent-color opacity-100 transition-opacity duration-500">TAKE</span>
+            </h1>
+
+            <p id="main-intro-text" class="text-lg sm:text-xl max-w-xl mx-auto leading-relaxed mb-4 px-4 transition-color-js">
+                Hi!<br> Willkommen zu meinem ersten Konzert: <span class="font-bold">“T<span class="text-accent-color">X</span>YD<span class="text-accent-color">X</span>”</span>
+                <br><br>
+                Ursprünglich ging es nur darum, wie ich zwischen den Liedern ein bisschen Zeit zum Durchatmen bekomme.. entwickelt hat sich daraus über die letzten Monate ein experimentelles Konzeptkonzert.
+                <br><br>
+                Im Zentrum stehen dabei Songs von Stephen Sondheim <span class="italic">(”Sweeney Todd”, “Company”)</span>, die mit szenischen Überleitungen verwoben sind und so eine narrative Struktur erhalten sollen.
+                <br><br>
+                Das Programm findet ihr hier:
+            </p>
+        </main>
+
+        <div class="flex justify-center pb-8">
+            <button id="scroll-down-btn" class="p-3 bg-zinc-800 rounded-full shadow-lg hover:bg-zinc-700 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#D4A74B] focus:ring-opacity-50 transition-color-js">
+                <svg id="scroll-btn-icon" class="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <section id="setlist-section" class="py-16 bg-black text-white flex flex-col items-center px-4 min-h-screen transition-color-js">
+        <h2 id="setlist-title" class="text-4xl font-bold mb-12 text-center transition-color-js">Setlist</h2>
+
+        <div class="w-full max-w-2xl space-y-6">
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-1">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">THE ROAD YOU DIDN'T TAKE</h3>
+                    <img src="./img/follies.jpg" alt="Follies" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-1" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <p class="italic mb-4">Ignorance is bliss – what's more?</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="1">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-2">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">ANOTHER HUNDRED PEOPLE</h3>
+                    <img src="./img/Company.png" alt="Company" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-2" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <p class="italic mb-4">...just got off of the train.</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="2">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-3">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">WONDERING</h3>
+                    <img src="./img/bridges.jpg" alt="Bridges of Madison County" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-3" class="setlist-item-content text-zinc-400">
+                    <p class="italic mb-4">Nothing's gonna happen.</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="3">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-4">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">NO MORE</h3>
+                    <img src="./img/itw.jpeg" alt="Into The Woods" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-4" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <p class="italic mb-4">Just no more.</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="4">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-5">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">TOOL – LOST KEYS (BLAME HOFMANN)</h3>
+                    <!-- <img src="./img/accessed.gif" alt="Accessed" class="h-16 w-auto object-contain mx-4"/> -->
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-5" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <img src="./img/accessed.gif" alt="Accessed" class=" h-40 mx-auto w-auto object-contain mx-4"/>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-6">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">GIANTS IN THE SKY</h3>
+                    <img src="./img/itw.jpeg" alt="Into The Woods Logo" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-6" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <p class="italic mb-4">And you're back again, only different than before..</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="6">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-7">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">SOMETHING'S COMING</h3>
+                    <img src="./img/wss.jpg" alt="Into The Woods Logo Placeholder" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-7" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <p class="italic mb-4">Could be, who knows?</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="7">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-8">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">BEING ALIVE</h3>
+                    <img src="./img/Company.png" alt="Into The Woods Logo Placeholder" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-8" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <p class="italic mb-4">Trust the moment, Robert – it's all there is.</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="8">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-9">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">APHEX TWIN – JYNWEYTHEK YLOW</h3>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-9" class="setlist-item-content text-zinc-400 transition-color-js bg-white">
+                    <img src="./img/eight.gif" alt="eight" class=" h-40 mx-auto w-auto object-contain mx-4"/>
+                </div>
+            </div>
+
+            <div class="setlist-item bg-zinc-900 rounded-lg shadow-lg overflow-hidden transition-color-js">
+                <div class="flex items-center p-4 cursor-pointer hover:bg-zinc-700 transition duration-200" data-toggle="setlist-item-10">
+                    <h3 class="text-xl font-semibold flex-grow text-accent-color">WITH SO LITTLE TO BE SURE OF</h3>
+                    <img src="./img/acw.jpg" alt="Into The Woods Logo Placeholder" class="h-16 w-auto object-contain mx-4"/>
+                    <svg class="w-6 h-6 text-accent-color chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+                <div id="setlist-item-10" class="setlist-item-content text-zinc-400 transition-color-js">
+                    <p class="italic mb-4">We had a moment, a marvelous moment.</p>
+                    <div class="ml-auto flex justify-between">
+                        <div> </div>
+                        <button class="lyrics-button p-2 mt-2 bg-[#D4A74B] text-black rounded-md hover:bg-[#c29642] transition-colors" data-song-id="10">Lyrics</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="setlist-section" class="py-16 bg-white text-black flex flex-col items-center px-4 min-h-screen transition-color-js">
+        <h2 id="setlist-title" class="text-4xl font-bold mb-6 text-center">Stephen Sondheim (1930-2021)</h2>
+
+        <div class="w-full max-w-2xl space-y-6 text-center">
+            <p>Sondheim war einer der einflussreichsten Komponisten und Texter im Musiktheater. Er war bekannt dafür musikalische Komplexität mit psychologischer Tiefe zu verbinden. 
+                So zeigen seine Stücke vor allem, wie kompliziert Menschen und Beziehungen sein können. Seine Arbeit beeinflusste Generationen von Künstler:innen und veränderte das Verständnis davon, was ein Musical sein kann 
+                – nicht nur Unterhaltung, sondern auch Kunstform, Spiegel und Fragezeichen zugleich.</p>
+        </div>
+
+        <h2 id="setlist-title" class="text-4xl font-bold mt-6 mb-3 text-center">DANKE</h2>
+
+        <div class="w-full max-w-2xl space-y-6">
+            <ul class="text-center">
+                <li class="mb-2">Euch, für's Kommen :)</li>
+                <li class="text-blue-500 font-bold hover:underline mb-2">
+                    <div class="flex justify-center gap-1">
+                        <img src="img/insta.svg" class="h-6"/>
+                        <a href="https://www.instagram.com/simon_asmus/" target="_blank">Simon Asmus</a>
+                    </div>
+                </li>                  
+                <li class="text-blue-500 font-bold">
+                    <div class="text-blue-500 font-bold hover:underline flex justify-center gap-1">
+                        <img src="img/facebook.svg" class="h-6"/>
+                        <a href="https://www.facebook.com/Einimethe/" target="_blank">Einimethe (Irene Schmidt/Rick Davids)</a></li>
+                    </div>
+            </ul>
+        </div>
+
+    </section>
+
+    <div id="lyrics-modal" class="modal">
+        <div class="modal-content transition-color-js">
+            <span class="close-button" id="close-modal">&times;</span>
+            <h3 id="modal-song-title" class="text-2xl font-bold mb-4 text-accent-color text-center"></h3>
+            <div class="language-toggle">
+                <button id="lang-en" class="active">English</button>
+                <button id="lang-de">Deutsch</button>
+            </div>
+            <div id="lyrics-container" class="lyrics-container text-zinc-400"></div>
+        </div>
+    </div>
+
+    <script>
+        // Array von Objekten, die die Paare für den dynamischen Titel enthalten
+        const titles = [
+            { x1: "ROAD", x2: "TAKE" },
+            { x1: "DOOR", x2: "TRY" },
+            { x1: "CHOICE", x2: "MAKE" },
+            { x1: "SELF", x2: "SEE" }
+        ];
+
+        let currentIndex = 0; // Aktueller Index des anzuzeigenden Titelpaares
+        const wordOneElement = document.getElementById('word-one'); // Referenz zum ersten wechselnden Wort
+        const wordTwoElement = document.getElementById('word-two'); // Referenz zum zweiten wechselnden Wort
+
+        /**
+         * Aktualisiert die beiden wechselnden Wörter im Titel.
+         * Führt einen Fading-Effekt (Ausblenden/Einblenden) nur der wechselnden Wörter durch.
+         */
+        function updateTitle() {
+            // Die wechselnden Wörter ausblenden
+            wordOneElement.style.opacity = 0;
+            wordTwoElement.style.opacity = 0;
+
+            // Nach einer kurzen Verzögerung (für den Ausblende-Effekt) die Wörter aktualisieren und wieder einblenden
+            setTimeout(() => {
+                const currentPair = titles[currentIndex];
+                // Aktualisiert nur den Textinhalt der beiden 'span'-Elemente
+                wordOneElement.textContent = currentPair.x1;
+                wordTwoElement.textContent = currentPair.x2;
+
+                // Die wechselnden Wörter wieder einblenden
+                wordOneElement.style.opacity = 1;
+                wordTwoElement.style.opacity = 1;
+
+                // Zum nächsten Index wechseln, bei Ende des Arrays wieder von vorne beginnen
+                currentIndex = (currentIndex + 1) % titles.length;
+            }, 500); // 500ms Verzögerung für den Übergang
+        }
+
+        // --- Dynamische Hintergrund- und Farbanpassung bei Scroll ---
+
+        // Hilfsfunktion zur Interpolation zwischen zwei RGB-Farben
+        function interpolateRgb(rgb1, rgb2, factor) {
+            const r = Math.round(rgb1[0] + factor * (rgb2[0] - rgb1[0]));
+            const g = Math.round(rgb1[1] + factor * (rgb2[1] - rgb1[1]));
+            const b = Math.round(rgb1[2] + factor * (rgb2[2] - rgb1[2]));
+            return [r, g, b]; // Return array for easier use with rgba()
+        }
+
+        // Farben als RGB-Arrays
+        const BLACK_RGB = [0, 0, 0];
+        const WHITE_RGB = [255, 255, 255];
+        const TEXT_WHITE_RGB = [255, 255, 255]; // Ursprüngliche Textfarbe
+        const TEXT_ZINC_800_RGB = [39, 39, 42]; // Dunkler Text für weißen Hintergrund
+
+        const BG_ZINC_800_RGB = [39, 39, 42]; // Hintergrundfarbe des Buttons
+        const BG_ZINC_200_RGB = [228, 228, 231]; // Hellere Hintergrundfarbe des Buttons
+
+        const TEXT_ZINC_400_RGB = [163, 163, 170]; // Textfarbe für Button-Icon und Setlist-Inhalt
+        const TEXT_ZINC_800_DARK_RGB = [39, 39, 42]; // Dunklere Textfarbe für Button-Icon und Setlist-Inhalt
+
+        const BG_ZINC_900_RGB = [24, 24, 27]; // Hintergrundfarbe der Setlist-Items (dunkel)
+        const BG_ZINC_100_RGB = [244, 244, 245]; // Hellere Hintergrundfarbe der Setlist-Items (fast weiß)
+
+        const BORDER_ZINC_700_RGB = [63, 63, 70]; // Randfarbe der Setlist-Items (dunkel)
+        const BORDER_ZINC_300_RGB = [212, 212, 216]; // Hellere Randfarbe der Setlist-Items (grau für weißen BG)
+
+
+        // Define shadow colors as RGB arrays
+        const SHADOW_DARK_RGB = [0, 0, 0]; // Black shadow for dark background (will have low/no alpha)
+        const SHADOW_LIGHT_RGB = [0, 0, 0]; // Black for the shadow color on light background (will have higher alpha)
+
+        // Elemente, deren Farben sich dynamisch ändern sollen
+        const bodyElement = document.body;
+        const mainIntroTextElement = document.getElementById('main-intro-text');
+        const scrollBtnElement = document.getElementById('scroll-down-btn');
+        const scrollBtnIconElement = document.getElementById('scroll-btn-icon');
+        const setlistTitleElement = document.getElementById('setlist-title');
+        const setlistSectionElement = document.getElementById('setlist-section');
+        const setlistItemsElements = document.querySelectorAll('.setlist-item'); // Alle Setlist-Items
+        const setlistItemContentTextElements = document.querySelectorAll('.setlist-item-content p'); // Texte in den ausklappbaren Bereichen
+        const modalContentElement = document.querySelector('.modal-content');
+
+        // Referenzpunkte für den Farbverlauf
+        let item4Top = 0;
+        let item9Bottom = 0;
+
+        // Function to update the positions of the transition points
+        function updateTransitionPoints() {
+            const item4 = document.querySelector('[data-toggle="setlist-item-4"]');
+            const item9 = document.querySelector('[data-toggle="setlist-item-9"]');
+
+            if (item4 && item9) {
+                item4Top = item4.getBoundingClientRect().top + window.scrollY - (window.innerHeight / 2);
+                item9Bottom = item9.getBoundingClientRect().bottom + window.scrollY - (window.innerHeight / 2);
+            }
+        }
+
+        // Main function for dynamic color adjustment on scroll
+        function updateColorsOnScroll() {
+            if (item4Top === 0 && item9Bottom === 0) {
+                updateTransitionPoints();
+            }
+
+            const scrollY = window.scrollY;
+            let scrollProgress = 0;
+
+            if (scrollY > item4Top && scrollY < item9Bottom) {
+                scrollProgress = (scrollY - item4Top) / (item9Bottom - item4Top);
+            } else if (scrollY >= item9Bottom) {
+                scrollProgress = 1;
+            } else {
+                scrollProgress = 0;
+            }
+
+            scrollProgress = Math.max(0, Math.min(1, scrollProgress));
+
+            bodyElement.style.backgroundColor = `rgb(${interpolateRgb(BLACK_RGB, WHITE_RGB, scrollProgress).join(',')})`;
+            setlistSectionElement.style.backgroundColor = `rgb(${interpolateRgb(BLACK_RGB, WHITE_RGB, scrollProgress).join(',')})`;
+
+            mainIntroTextElement.style.color = `rgb(${interpolateRgb(TEXT_WHITE_RGB, TEXT_ZINC_800_RGB, scrollProgress).join(',')})`;
+            setlistTitleElement.style.color = `rgb(${interpolateRgb(TEXT_WHITE_RGB, TEXT_ZINC_800_RGB, scrollProgress).join(',')})`;
+
+            scrollBtnElement.style.backgroundColor = `rgb(${interpolateRgb(BG_ZINC_800_RGB, BG_ZINC_200_RGB, scrollProgress).join(',')})`;
+            scrollBtnIconElement.style.color = `rgb(${interpolateRgb(TEXT_ZINC_400_RGB, TEXT_ZINC_800_DARK_RGB, scrollProgress).join(',')})`;
+
+            setlistItemsElements.forEach(item => {
+                item.style.backgroundColor = `rgb(${interpolateRgb(BG_ZINC_900_RGB, BG_ZINC_100_RGB, scrollProgress).join(',')})`;
+
+                const borderRgb = interpolateRgb(BORDER_ZINC_700_RGB, BORDER_ZINC_300_RGB, scrollProgress);
+                item.style.setProperty('--border-color', `rgb(${borderRgb.join(',')})`);
+
+                const shadowAlpha = 0.2 * scrollProgress;
+                const shadowRgb = interpolateRgb(SHADOW_DARK_RGB, SHADOW_LIGHT_RGB, scrollProgress);
+                item.style.boxShadow = `0 4px 6px -1px rgba(${shadowRgb.join(',')}, ${shadowAlpha}), 0 2px 4px -2px rgba(${shadowRgb.join(',')}, ${shadowAlpha})`;
+            });
+
+            setlistItemContentTextElements.forEach(p => {
+                p.style.color = `rgb(${interpolateRgb(TEXT_ZINC_400_RGB, TEXT_ZINC_800_DARK_RGB, scrollProgress).join(',')})`;
+            });
+
+            modalContentElement.style.backgroundColor = `rgb(${interpolateRgb(BG_ZINC_900_RGB, BG_ZINC_100_RGB, scrollProgress).join(',')})`;
+            modalContentElement.style.color = `rgb(${interpolateRgb(TEXT_WHITE_RGB, TEXT_ZINC_800_RGB, scrollProgress).join(',')})`;
+            document.getElementById('lyrics-container').style.color = `rgb(${interpolateRgb(TEXT_ZINC_400_RGB, TEXT_ZINC_800_DARK_RGB, scrollProgress).join(',')})`;
+        }
+
+
+        // --- Lyrics Modal Functionality ---
+        let lyricsData = {}; // This will now be populated from the JSON file
+
+        const lyricsModal = document.getElementById('lyrics-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const modalSongTitle = document.getElementById('modal-song-title');
+        const lyricsContainer = document.getElementById('lyrics-container');
+        const langEnBtn = document.getElementById('lang-en');
+        const langDeBtn = document.getElementById('lang-de');
+
+        let currentSongId = null;
+        let currentLanguage = 'en'; // Default language
+
+        // Function to open the modal
+        function openModal(songId) {
+            currentSongId = songId;
+            const song = lyricsData[songId]; // Access directly by ID
+            if (song) {
+                modalSongTitle.textContent = song.title;
+                displayLyrics(currentLanguage);
+                lyricsModal.classList.add('open');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling body when modal is open
+            }
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            lyricsModal.classList.remove('open');
+            document.body.style.overflow = ''; // Restore body scrolling
+        }
+
+        // Function to display lyrics based on current language
+        function displayLyrics(lang) {
+            if (currentSongId && lyricsData[currentSongId]) {
+                lyricsContainer.textContent = lyricsData[currentSongId][lang];
+                // Update active state of language buttons
+                if (lang === 'en') {
+                    langEnBtn.classList.add('active');
+                    langDeBtn.classList.remove('active');
+                } else {
+                    langDeBtn.classList.add('active');
+                    langEnBtn.classList.remove('active');
+                }
+            }
+        }
+
+        // Function to fetch lyrics from JSON
+        async function fetchLyrics() {
+            try {
+                const response = await fetch('lyrics.json'); // Adjust path if your JSON is in a subfolder
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                // Transform array into an object indexed by ID for easier lookup
+                lyricsData = data.reduce((acc, song) => {
+                    acc[song.id] = song;
+                    return acc;
+                }, {});
+                console.log('Lyrics loaded:', lyricsData); // For debugging
+            } catch (error) {
+                console.error('Could not fetch lyrics:', error);
+            }
+        }
+
+        // This function runs once the entire page is loaded
+        window.onload = async function() { // Made onload async to await fetchLyrics
+            await fetchLyrics(); // Fetch lyrics before setting up other functionality
+
+            updateTitle(); // Set the first title immediately
+            setInterval(updateTitle, 4000);
+
+            updateTransitionPoints();
+            updateColorsOnScroll(); // Set initial state
+
+            document.querySelectorAll('[data-toggle]').forEach(item => {
+                item.addEventListener('click', function() {
+                    const targetId = this.dataset.toggle;
+                    const targetContent = document.getElementById(targetId);
+                    const chevronIcon = this.querySelector('.chevron-icon');
+
+                    if (targetContent.classList.contains('expanded')) {
+                        targetContent.classList.remove('expanded');
+                        chevronIcon.classList.remove('rotate');
+                        targetContent.classList.remove('with-border');
+                    } else {
+                        document.querySelectorAll('.setlist-item-content.expanded').forEach(openItem => {
+                            openItem.classList.remove('expanded');
+                            openItem.previousElementSibling.querySelector('.chevron-icon').classList.remove('rotate');
+                            openItem.classList.remove('with-border');
+                        });
+                        targetContent.classList.add('expanded');
+                        chevronIcon.classList.add('rotate');
+                        targetContent.classList.add('with-border');
+                    }
+                });
+            });
+
+            // Event Listeners for lyrics buttons (now attached AFTER lyricsData is loaded)
+            document.querySelectorAll('.lyrics-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const songId = parseInt(this.dataset.songId);
+                    openModal(songId);
+                });
+            });
+
+            langEnBtn.addEventListener('click', () => {
+                currentLanguage = 'en';
+                displayLyrics('en');
+            });
+
+            langDeBtn.addEventListener('click', () => {
+                currentLanguage = 'de';
+                displayLyrics('de');
+            });
+
+            closeModalBtn.addEventListener('click', closeModal);
+
+            lyricsModal.addEventListener('click', (event) => {
+                if (event.target === lyricsModal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && lyricsModal.classList.contains('open')) {
+                    closeModal();
+                }
+            });
+
+            document.getElementById('scroll-down-btn').addEventListener('click', () => {
+                const setlistSection = document.getElementById('setlist-section');
+                if (setlistSection) {
+                    const offset = setlistSection.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top: offset, behavior: 'smooth' });
+                }
+            });
+
+            window.addEventListener('scroll', updateColorsOnScroll);
+            window.addEventListener('resize', () => {
+                updateTransitionPoints();
+                updateColorsOnScroll();
+            });
+        }
+    </script>
+</body>
+</html>
