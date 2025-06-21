@@ -125,31 +125,34 @@
 <body class="bg-black text-white antialiased">
     <div class="flex flex-col min-h-screen">
         <main class="flex-grow flex flex-col items-center justify-center p-4 text-center">
-            <h1 id="dynamic-title" class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-2 pt-8">
-                THE <span id="word-one" class="text-accent-color opacity-100 transition-opacity duration-500">ROAD</span> YOU DIDN'T <span id="word-two" class="text-accent-color opacity-100 transition-opacity duration-500">TAKE</span>
-            </h1>
+            <section id="title-section" class="min-h-screen flex flex-col justify-center items-center">
+                <img id="image" src="" alt="Dynamic Visual" class="w-[50%] mb-2 opacity-100 transition-opacity duration-500">
+                <h1 id="dynamic-title-screen" class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 pt-8 z-10">
+                    THE <span id="word-one" class="opacity-100 transition-opacity duration-500">ROAD</span> YOU DIDN'T <span id="word-two" class="opacity-100 transition-opacity duration-500">TAKE</span>
+                </h1>
+                <div class="flex justify-center pb-8 bottom-0 absolute">
+                    <button id="scroll-down-btn-0" class="p-3 bg-zinc-800 rounded-full shadow-lg hover:bg-zinc-700 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#D4A74B] focus:ring-opacity-50 transition-color-js">
+                        <svg id="scroll-btn-icon-0" class="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </section>
 
+            <section id="intro-section" class="min-h-screen flex flex-col justify-center items-center">
             <p id="main-intro-text" class="text-lg sm:text-xl max-w-xl mx-auto leading-relaxed mb-4 px-4 transition-color-js">
-                Hi!<br> Willkommen zu meinem ersten Konzert: <span class="font-bold">“T<span class="text-accent-color">X</span>YD<span class="text-accent-color">X</span>”</span>
+                Hi! Willkommen zu meinem ersten Konzert: <span class="font-bold">“T<span class="text-accent-color">X</span>YD<span class="text-accent-color">X</span>”</span>
                 <br><br>
-                Ursprünglich ging es nur darum, wie ich zwischen den Liedern ein bisschen Zeit zum Durchatmen bekomme. Entwickelt hat sich daraus nun Folgendes:
+                Ursprünglich ging es nur darum, wie ich zwischen den Liedern ein bisschen Zeit zum Durchatmen bekomme. Entwickelt hat sich daraus nun:
                 <br><br>
                 Songs von Stephen Sondheim <span class="italic">(”Sweeney Todd”, “Company”)</span> verweben sich mit szenischen Übergängen zu einer fragmentarischen Erzählung. Im Fokus steht 'ROBERT': Aufgespalten in Erinnerungen und ungelebten Möglichkeiten.
                 <br><br>
-                Das Programm findet ihr hier
+                Das Programm findet ihr unten.
             </p>
-        </main>
+            </section>
 
-        <div class="flex justify-center pb-8">
-            <button id="scroll-down-btn" class="p-3 bg-zinc-800 rounded-full shadow-lg hover:bg-zinc-700 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#D4A74B] focus:ring-opacity-50 transition-color-js">
-                <svg id="scroll-btn-icon" class="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
 
-    <section id="setlist-section" class="py-16 bg-black text-white flex flex-col items-center px-4 min-h-screen transition-color-js">
+    <section id="setlist-section" class="p-8 bg-black text-white flex flex-col items-center px-4 min-h-screen transition-color-js">
         <h2 id="setlist-title" class="text-4xl font-bold mb-12 text-center transition-color-js">Setlist</h2>
 
         <div class="w-full max-w-2xl space-y-6">
@@ -316,7 +319,7 @@
         </div>
     </section>
 
-    <section id="setlist-section" class="bg-white text-black flex flex-col items-center p-4 pb-12 transition-color-js">
+    <section id="setlist-section" class="bg-white text-black flex flex-col items-center p-4 pb-12 transition-color-js  ">
         <h2 id="setlist-title" class="text-4xl font-bold mb-6 text-center">Stephen Sondheim (1930-2021)</h2>
 
         <div class="w-full max-w-2xl space-y-6 text-center">
@@ -357,44 +360,77 @@
             <div id="lyrics-container" class="lyrics-container text-zinc-400"></div>
         </div>
     </div>
+</main>
+</div>
 
     <script>
-        // Array von Objekten, die die Paare für den dynamischen Titel enthalten
-        const titles = [
-            { x1: "ROAD", x2: "TAKE" },
-            { x1: "DOOR", x2: "TRY" },
-            { x1: "CHOICE", x2: "MAKE" },
-            { x1: "SELF", x2: "SEE" }
-        ];
+  // Array von Objekten, die die Paare für den dynamischen Titel enthalten
+const titles = [
+    { x1: "ROAD", x2: "TAKE", x3: 'img/road.png' },
+    { x1: "DOOR", x2: "TRY", x3: 'img/door.svg' },
+    { x1: "CHOICE", x2: "MAKE", x3: 'img/choice.svg' },
+    { x1: "SELF", x2: "SEE", x3: 'img/e.gif' }
+];
 
-        let currentIndex = 0; // Aktueller Index des anzuzeigenden Titelpaares
-        const wordOneElement = document.getElementById('word-one'); // Referenz zum ersten wechselnden Wort
-        const wordTwoElement = document.getElementById('word-two'); // Referenz zum zweiten wechselnden Wort
+let lastSelectedIndex = -1; // Keep track of the last displayed index
 
-        /**
-         * Aktualisiert die beiden wechselnden Wörter im Titel.
-         * Führt einen Fading-Effekt (Ausblenden/Einblenden) nur der wechselnden Wörter durch.
-         */
-        function updateTitle() {
-            // Die wechselnden Wörter ausblenden
-            wordOneElement.style.opacity = 0;
-            wordTwoElement.style.opacity = 0;
+let currentIndex = 0; // Aktueller Index des anzuzeigenden Titelpaares für die ersten drei Elemente
+const wordOneElement = document.getElementById('word-one'); // Referenz zum ersten wechselnden Wort
+const wordTwoElement = document.getElementById('word-two'); // Referenz zum zweiten wechselnden Wort
+const imageElement = document.getElementById('image');
 
-            // Nach einer kurzen Verzögerung (für den Ausblende-Effekt) die Wörter aktualisieren und wieder einblenden
-            setTimeout(() => {
-                const currentPair = titles[currentIndex];
-                // Aktualisiert nur den Textinhalt der beiden 'span'-Elemente
-                wordOneElement.textContent = currentPair.x1;
-                wordTwoElement.textContent = currentPair.x2;
+/**
+ * Aktualisiert die beiden wechselnden Wörter im Titel.
+ * Führt einen Fading-Effekt (Ausblenden/Einblenden) nur der wechselnden Wörter durch.
+ */
+function updateTitle() {
+    // Die wechselnden Wörter ausblenden
+    wordOneElement.style.opacity = 0;
+    wordTwoElement.style.opacity = 0;
+    imageElement.style.opacity = 0;
 
-                // Die wechselnden Wörter wieder einblenden
-                wordOneElement.style.opacity = 1;
-                wordTwoElement.style.opacity = 1;
+    // Nach einer kurzen Verzögerung (für den Ausblende-Effekt) die Wörter aktualisieren und wieder einblenden
+    setTimeout(() => {
+        let currentPair;
 
-                // Zum nächsten Index wechseln, bei Ende des Arrays wieder von vorne beginnen
-                currentIndex = (currentIndex + 1) % titles.length;
-            }, 500); // 500ms Verzögerung für den Übergang
+        // 20% Chance, das vierte Paar ("SELF SEE") anzuzeigen
+        if (Math.random() < 0.15) {
+            currentPair = titles[3]; // Wähle das vierte Paar
+            // Setze den currentIndex nicht zurück, da es eine "Einschub"-Anzeige ist
+        } else {
+            // Zeige die ersten drei Paare sequenziell an
+            currentPair = titles[currentIndex];
+            currentIndex = (currentIndex + 1) % 3; // Stellt sicher, dass der Index zwischen 0, 1, 2 bleibt
         }
+
+        // Update the text content and image source
+        wordOneElement.textContent = currentPair.x1;
+        wordTwoElement.textContent = currentPair.x2;
+        imageElement.src = currentPair.x3;
+
+        // Reveal the words and image
+        wordOneElement.style.opacity = 1;
+        wordTwoElement.style.opacity = 1;
+        imageElement.style.opacity = 1; // Korrigiert von 'image.style.opacity' zu 'imageElement.style.opacity'
+
+        // Apply color based on the selected pair
+        if (currentPair.x1 === "SELF") {
+            wordOneElement.style.color = '#FFFFFF';
+            wordTwoElement.style.color = '#FFFFFF';
+        } else {
+            wordOneElement.style.color = '#D4A74B';
+            wordTwoElement.style.color = '#D4A74B';
+        }
+
+    }, 500); // 500ms Verzögerung für den Übergang
+}
+
+// Starten Sie das Intervall, um updateTitle regelmäßig aufzurufen
+// Beispiel: alle 3 Sekunden
+setInterval(updateTitle, 3000);
+
+// Rufen Sie updateTitle einmal beim Laden der Seite auf, um den ersten Titel anzuzeigen
+document.addEventListener('DOMContentLoaded', updateTitle);
 
         // --- Dynamische Hintergrund- und Farbanpassung bei Scroll ---
 
@@ -433,7 +469,9 @@
         const bodyElement = document.body;
         const mainIntroTextElement = document.getElementById('main-intro-text');
         const scrollBtnElement = document.getElementById('scroll-down-btn');
-        const scrollBtnIconElement = document.getElementById('scroll-btn-icon');
+        const scrollBtn0Element = document.getElementById('scroll-down-btn-0');
+        // const scrollBtnIconElement = document.getElementById('scroll-btn-icon');
+        const scrollBtnIcon0Element = document.getElementById('scroll-btn-icon-0');
         const setlistTitleElement = document.getElementById('setlist-title');
         const setlistSectionElement = document.getElementById('setlist-section');
         const setlistItemsElements = document.querySelectorAll('.setlist-item'); // Alle Setlist-Items
@@ -480,8 +518,8 @@
             mainIntroTextElement.style.color = `rgb(${interpolateRgb(TEXT_WHITE_RGB, TEXT_ZINC_800_RGB, scrollProgress).join(',')})`;
             setlistTitleElement.style.color = `rgb(${interpolateRgb(TEXT_WHITE_RGB, TEXT_ZINC_800_RGB, scrollProgress).join(',')})`;
 
-            scrollBtnElement.style.backgroundColor = `rgb(${interpolateRgb(BG_ZINC_800_RGB, BG_ZINC_200_RGB, scrollProgress).join(',')})`;
-            scrollBtnIconElement.style.color = `rgb(${interpolateRgb(TEXT_ZINC_400_RGB, TEXT_ZINC_800_DARK_RGB, scrollProgress).join(',')})`;
+            scrollBtn0Element.style.backgroundColor = `rgb(${interpolateRgb(BG_ZINC_800_RGB, BG_ZINC_200_RGB, scrollProgress).join(',')})`;
+            scrollBtnIcon0Element.style.color = `rgb(${interpolateRgb(TEXT_ZINC_400_RGB, TEXT_ZINC_800_DARK_RGB, scrollProgress).join(',')})`;
 
             setlistItemsElements.forEach(item => {
                 item.style.backgroundColor = `rgb(${interpolateRgb(BG_ZINC_900_RGB, BG_ZINC_100_RGB, scrollProgress).join(',')})`;
@@ -634,10 +672,18 @@
                 }
             });
 
-            document.getElementById('scroll-down-btn').addEventListener('click', () => {
-                const setlistSection = document.getElementById('setlist-section');
-                if (setlistSection) {
-                    const offset = setlistSection.getBoundingClientRect().top + window.scrollY;
+            // document.getElementById('scroll-down-btn').addEventListener('click', () => {
+            //     const setlistSection = document.getElementById('setlist-section');
+            //     if (setlistSection) {
+            //         const offset = setlistSection.getBoundingClientRect().top + window.scrollY;
+            //         window.scrollTo({ top: offset, behavior: 'smooth' });
+            //     }
+            // });
+
+            document.getElementById('scroll-down-btn-0').addEventListener('click', () => {
+                const introSection = document.getElementById('intro-section');
+                if (introSection) {
+                    const offset = introSection.getBoundingClientRect().top + window.scrollY;
                     window.scrollTo({ top: offset, behavior: 'smooth' });
                 }
             });
