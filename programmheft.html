@@ -126,7 +126,7 @@
     <div class="flex flex-col min-h-screen">
         <main class="flex-grow flex flex-col items-center justify-center p-4 text-center">
             <section id="title-section" class="min-h-screen flex flex-col justify-center items-center">
-                <img id="image" src="" alt="Dynamic Visual" class="w-[50%] mb-2 opacity-100 transition-opacity duration-500">
+                <img id="image" src="img/road.png" alt="Dynamic Visual" class="w-[50%] mb-2 opacity-100 transition-opacity duration-500">
                 <h1 id="dynamic-title-screen" class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 pt-8 z-10">
                     THE <span id="word-one" class="opacity-100 transition-opacity duration-500">ROAD</span> YOU DIDN'T <span id="word-two" class="opacity-100 transition-opacity duration-500">TAKE</span>
                 </h1>
@@ -147,7 +147,6 @@
                 <br><br>
                 Songs von Stephen Sondheim <span class="italic">(”Sweeney Todd”, “Company”)</span> verweben sich mit szenischen Übergängen zu einer fragmentarischen Erzählung. Im Fokus steht 'ROBERT': Aufgespalten in Erinnerungen und ungelebten Möglichkeiten.
                 <br><br>
-                Das Programm findet ihr unten.
             </p>
             </section>
 
@@ -612,7 +611,6 @@ document.addEventListener('DOMContentLoaded', updateTitle);
             await fetchLyrics(); // Fetch lyrics before setting up other functionality
 
             updateTitle(); // Set the first title immediately
-            setInterval(updateTitle, 4000);
 
             updateTransitionPoints();
             updateColorsOnScroll(); // Set initial state
